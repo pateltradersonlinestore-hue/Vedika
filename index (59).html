@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vedika - The Indian AI Architect</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
+    <script>
+        MathJax = {
+          tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+          startup: { typeset: false } 
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gemini: { bg: '#fbfbfd', surface: '#ffffff', user: '#f0f4f9', text: '#1d1d1f', blue: '#0066cc' },
+                        vedika: { orange: '#FF671F', green: '#046A38' }
+                    },
+                    fontFamily: { sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background: #fbfbfd; color: #1d1d1f; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; letter-spacing: -0.01em; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
+        
+        .smooth-transition { transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1); }
+
+        /* Apple Style Glassmorphism */
+        .apple-glass {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+        }
+        
+        .apple-header-glass {
+            background: rgba(251, 251, 253, 0.8);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .vedika-gradient-text {
+            background: linear-gradient(to right, #4F5EFE, #9952FF, #FF459E);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+
+        .gemini-input-container {
+            position: relative;
+            background: linear-gradient(90deg, #0066cc, #9b72cb, #d96570, #0066cc);
+            background-size: 300% 300%;
+            animation: moveGradient 5s linear infinite;
+            padding: 1.5px;
+            border-radius: 28px;
+        }
+        .gemini-input-container:focus-within { box-shadow: 0 0 20px rgba(0, 102, 204, 0.2), 0 0 25px rgba(155, 114, 203, 0.2); }
+        .inner-input { background: rgba(255, 255, 255, 0.95); border-radius: 26px; backdrop-filter: blur(10px); }
+
+        @keyframes moveGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ==========================================
+           ADVANCED PRO-MARKING (TEXT FORMATTING) 
+           ========================================== */
+        .markdown-body p { margin-bottom: 16px; line-height: 1.6; font-size: 15px; color: #2d3748; }
+        .markdown-body h1, .markdown-body h2, .markdown-body h3 { font-weight: 700; margin-top: 1.5em; margin-bottom: 0.5em; color: #1a202c; letter-spacing: -0.02em; }
+        .markdown-body h1 { font-size: 1.8em; border-bottom: 2px solid #edf2f7; padding-bottom: 8px; }
+        .markdown-body h2 { font-size: 1.5em; color: #2d3748; }
+        .markdown-body h3 { font-size: 1.25em; }
+        
+        .markdown-body strong { font-weight: 800; color: #1a202c; }
+        .markdown-body em { font-style: italic; color: #4a5568; }
+        
+        .markdown-body code:not(.hljs) { 
+            background: #ebf8ff; color: #2b6cb0; padding: 3px 6px; border-radius: 6px; 
+            font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.85em; font-weight: 600; border: 1px solid #bee3f8;
+        }
+        
+        .markdown-body blockquote { 
+            border-left: 4px solid #0066cc; padding: 12px 16px; margin: 0 0 16px 0; background: #f0f7ff; 
+            border-radius: 0 12px 12px 0; color: #4a5568; font-style: italic;
+        }
+        
+        .markdown-body pre { background: #1e1e1e !important; border-radius: 16px; color: #d4d4d4; padding: 0; margin: 16px 0; overflow: hidden; font-size: 13px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
+        
+        .markdown-body ul, .markdown-body ol { margin-left: 24px; margin-bottom: 16px; color: #2d3748; }
+        .markdown-body ul { list-style-type: disc; } .markdown-body ol { list-style-type: decimal; }
+        .markdown-body li { margin-bottom: 6px; } .markdown-body li::marker { color: #0066cc; font-weight: bold; }
+        
+        .markdown-body table { width: 100%; border-collapse: collapse; margin-bottom: 16px; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .markdown-body th, .markdown-body td { border: 1px solid #e2e8f0; padding: 12px; text-align: left; }
+        .markdown-body th { background-color: #f7fafc; font-weight: 700; color: #1a202c; }
+        
+        .reasoning-box { transition: max-height 0.4s ease-in-out; overflow: hidden; max-height: 0; }
+        .reasoning-box.open { max-height: 5000px; }
+
+        .canvas-drawer { transform: translateX(100%); z-index: 50; }
+        .canvas-drawer.open { transform: translateX(0); box-shadow: -10px 0 30px rgba(0,0,0,0.05); }
+        #canvas-content[contenteditable="true"]:focus { outline: none; }
+        
+        .hidden-data { display: none !important; }
+        #auth-overlay { backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); background: rgba(255,255,255,0.4); }
+    </style>
+
+    <script>
+        // ==========================================
+        // === RENDERER INITIALIZATION ===
+        // ==========================================
+        const purifyConfig = { ADD_TAGS: ['button', 'i', 'span', 'div'], ADD_ATTR: ['onclick', 'id', 'class'] };
+        const renderer = new marked.Renderer();
+        
+        renderer.code = function(codeInfo, lang) {
+            const text = typeof codeInfo === 'object' ? codeInfo.text : arguments[0];
+            const language = typeof codeInfo === 'object' ? codeInfo.lang : arguments[1];
+            const validLang = hljs.getLanguage(language) ? language : 'plaintext'; 
+            const highlighted = hljs.highlight(text, { language: validLang }).value; 
+            const uniqueId = 'code-' + Math.random().toString(36).substr(2, 9);
+            
+            return `<div class="relative mt-4 mb-4 rounded-2xl overflow-hidden border border-gray-700/50 shadow-lg bg-[#1e1e1e]">
+                        <div class="flex items-center justify-between px-4 py-2.5 bg-[#2d2d2d] border-b border-gray-700">
+                            <span class="text-[11px] font-bold uppercase tracking-widest text-gray-400">${validLang}</span>
+                            <button onclick="copyCode('${uniqueId}', this)" class="hover:text-white flex items-center gap-1.5 text-[11px] font-bold text-gray-400 transition-colors cursor-pointer">
+                                <i class="ph-bold ph-copy text-sm"></i> <span>Copy Code</span>
+                            </button>
+                        </div>
+                        <pre class="!m-0 !rounded-none !border-none !bg-transparent"><code id="${uniqueId}" class="hljs ${validLang} p-5 block text-[13px] overflow-x-auto leading-relaxed text-gray-200">${highlighted}</code></pre>
+                    </div>`;
+        };
+        marked.setOptions({ renderer });
+    </script>
+</head>
+
+<body class="h-screen overflow-hidden flex flex-col relative">
+
+    <div id="auth-overlay" class="fixed inset-0 z-[100] flex items-center justify-center p-4 smooth-transition hidden">
+        <div class="apple-glass rounded-[32px] w-full max-w-md p-8 relative overflow-hidden border border-white">
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#4F5EFE] via-[#9952FF] to-[#FF459E]"></div>
+            
+            <button id="auth-close-btn" onclick="closeAuthOverlay()" class="absolute top-6 right-6 text-gray-400 hover:text-gray-800 transition-colors hidden">
+                <i class="ph-bold ph-x text-lg"></i>
+            </button>
+
+            <div class="text-center mb-6 mt-2">
+                <img src="https://i.ibb.co/YFgwgwkM/Blue-and-Black-Minimalist-Brand-Logo-20260403-135528-0000.png" class="h-10 mx-auto mb-4 object-contain drop-shadow-sm">
+                <h2 class="text-2xl font-bold text-gray-900 tracking-tight" id="auth-title">Login to Vedika</h2>
+                <div class="mt-3 inline-flex items-center gap-1.5 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 text-emerald-700 px-4 py-1.5 rounded-full text-[11px] font-bold shadow-sm">
+                    <i class="ph-fill ph-shield-check text-emerald-600"></i> It's completely free, no money is charged!
+                </div>
+            </div>
+            
+            <div id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Email or Phone</label>
+                    <input type="text" id="login-id" class="w-full bg-white/80 border border-gray-200 rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-gemini-blue shadow-sm transition-shadow" placeholder="Enter email or phone">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Password</label>
+                    <input type="password" id="login-pass" class="w-full bg-white/80 border border-gray-200 rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-gemini-blue shadow-sm transition-shadow" placeholder="Enter password">
+                </div>
+                <button onclick="handleAuth('login')" class="w-full bg-[#1d1d1f] hover:bg-black text-white font-bold py-3.5 rounded-2xl transition-transform active:scale-[0.98] mt-2 shadow-md" id="btn-login">Login</button>
+                <p class="text-center text-sm text-gray-500 mt-4 font-medium">Need an account? <button onclick="toggleAuthForm()" class="text-gemini-blue font-bold hover:underline">Register</button></p>
+            </div>
+            
+            <div id="register-form" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Full Name</label>
+                    <input type="text" id="reg-name" class="w-full bg-white/80 border border-gray-200 rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-gemini-blue shadow-sm" placeholder="Enter your name">
+                </div>
+                <div class="flex gap-3">
+                    <div class="w-1/2">
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Email</label>
+                        <input type="email" id="reg-email" class="w-full bg-white/80 border border-gray-200 rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-gemini-blue shadow-sm" placeholder="Email Address">
+                    </div>
+                    <div class="w-1/2">
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Phone</label>
+                        <input type="tel" id="reg-phone" class="w-full bg-white/80 border border-gray-200 rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-gemini-blue shadow-sm" placeholder="Phone Number">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Password</label>
+                    <input type="password" id="reg-pass" class="w-full bg-white/80 border border-gray-200 rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-gemini-blue shadow-sm" placeholder="Create a password">
+                </div>
+                <button onclick="handleAuth('register')" class="w-full bg-gemini-blue hover:bg-blue-700 text-white font-bold py-3.5 rounded-2xl transition-transform active:scale-[0.98] mt-2 shadow-md" id="btn-register">Create Account</button>
+                <p class="text-center text-sm text-gray-500 mt-4 font-medium">Already have an account? <button onclick="toggleAuthForm()" class="text-gray-900 font-bold hover:underline">Login</button></p>
+            </div>
+            <div id="auth-msg" class="text-center text-sm font-bold mt-4 hidden"></div>
+        </div>
+    </div>
+
+    <div id="profile-overlay" class="fixed inset-0 bg-black/40 z-[90] hidden items-center justify-center p-4 backdrop-blur-sm smooth-transition">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform" id="profile-modal">
+            <div class="bg-gray-50 p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="font-bold text-gray-800 text-lg flex items-center gap-2"><i class="ph-fill ph-user-circle text-gemini-blue text-2xl"></i> My Profile</h3>
+                <button onclick="closeProfile()" class="text-gray-400 hover:text-gray-800"><i class="ph-bold ph-x text-lg"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">Name</label>
+                    <input type="text" id="prof-name" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">Company / Organization</label>
+                    <input type="text" id="prof-company" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. Patel Traders">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">Phone Number</label>
+                    <input type="text" id="prof-phone" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                
+                <div id="otp-section" class="hidden bg-blue-50 p-4 rounded-xl border border-blue-100 mt-4">
+                    <label class="block text-xs font-bold text-blue-800 mb-1">Enter 6-digit OTP sent to your email</label>
+                    <input type="text" id="prof-otp" class="w-full bg-white border border-blue-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none text-center tracking-widest font-mono" placeholder="------">
+                    <button onclick="verifyAndSaveProfile()" class="w-full bg-gemini-blue text-white font-bold py-2 rounded-lg mt-3 text-sm" id="btn-verify-otp">Verify & Save</button>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button onclick="requestProfileOTP()" class="flex-1 bg-gray-900 text-white font-bold py-2.5 rounded-xl text-sm hover:bg-black" id="btn-req-otp">Get OTP to Update</button>
+                    <button onclick="logout()" class="px-4 bg-red-50 text-red-600 font-bold py-2.5 rounded-xl text-sm hover:bg-red-100" title="Logout"><i class="ph-bold ph-sign-out"></i></button>
+                </div>
+                <div id="prof-msg" class="text-center text-xs font-bold mt-2 hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <header class="apple-header-glass flex justify-between items-center px-4 py-3 sm:px-6 z-30 shrink-0 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+        <div class="flex items-center gap-3 relative group cursor-pointer">
+            <button onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-900 transition-colors p-1"><i class="ph-bold ph-list text-2xl"></i></button>
+            <img src="https://i.ibb.co/YFgwgwkM/Blue-and-Black-Minimalist-Brand-Logo-20260403-135528-0000.png" alt="Vedika Logo" class="h-6 sm:h-8 w-auto object-contain hidden sm:block drop-shadow-sm">
+            <h1 class="text-xl font-bold flex items-center gap-1.5 tracking-tight border-l border-gray-300 pl-3 ml-1 sm:ml-3">
+                <span id="current-model-display" class="vedika-gradient-text">Flash</span>
+                <i class="ph-bold ph-caret-down text-sm text-gray-400 group-hover:text-gray-800 transition-colors ml-1"></i>
+            </h1>
+            <div class="absolute top-full left-10 mt-2 w-72 apple-glass rounded-2xl shadow-xl hidden group-hover:block p-2 z-50">
+                <button onclick="setModel('flash')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/50 flex flex-col gap-1 transition-colors">
+                    <span class="font-bold text-lg flex items-center gap-2"><i class="ph-fill ph-lightning text-yellow-500"></i> <span class="vedika-gradient-text">Vedika Flash</span></span>
+                    <span class="text-xs text-gray-500 font-medium">Perfect for fast and accurate coding/math.</span>
+                </button>
+                <button onclick="setModel('pro')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/50 flex flex-col gap-1 mt-1 transition-colors">
+                    <span class="font-bold text-lg flex items-center gap-2"><i class="ph-fill ph-brain text-gemini-blue"></i> <span class="vedika-gradient-text">Vedika Pro</span></span>
+                    <span class="text-xs text-gray-500 font-medium">For deep logic and complex designs.</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="flex gap-3 sm:gap-4 items-center">
+            
+            <div id="status-container" class="hidden sm:flex flex-col items-end justify-center mr-1">
+                <div id="guest-counter" class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 text-orange-700 text-[11px] font-bold shadow-sm">
+                    <i class="ph-fill ph-gift text-sm"></i> <span id="guest-left">3</span> Free left
+                </div>
+                <div id="verified-badge" class="hidden flex-col items-end">
+                    <div class="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold shadow-sm">
+                        <i class="ph-fill ph-seal-check text-emerald-600"></i> Verified
+                    </div>
+                    <span class="text-[8.5px] text-gray-500 font-bold mt-0.5 tracking-wide">UNLIMITED ACCESS</span>
+                </div>
+            </div>
+
+            <button id="canvas-toggle-btn" onclick="toggleWorkspace()" class="hidden sm:flex items-center gap-2 px-4 py-1.5 rounded-full border border-gray-200 bg-white/50 text-gray-600 font-bold text-sm transition-all hover:bg-white shadow-sm">
+                <div class="w-2 h-2 rounded-full bg-gray-400 indicator smooth-transition"></div> Workspace
+            </button>
+            <button onclick="startNewChat()" class="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-white/50 border border-gray-200 hover:bg-white flex items-center justify-center text-gray-600 transition-colors shadow-sm" title="New Chat">
+                <i class="ph-bold ph-plus text-lg"></i>
+            </button>
+            <button onclick="openProfile()" class="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-gradient-to-tr from-gemini-blue to-purple-500 flex items-center justify-center text-white font-bold text-sm shadow-md transition-transform hover:scale-105">
+                <span id="user-initial"><i class="ph-bold ph-user"></i></span>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 flex overflow-hidden relative w-full">
+        
+        <div id="sidebar" class="w-72 bg-[#f8fafd] border-r border-gray-200/80 flex flex-col shrink-0 absolute lg:relative z-40 h-full transition-transform duration-300 -translate-x-full lg:-translate-x-full shadow-2xl lg:shadow-none">
+            <div class="p-4 border-b border-gray-200/50 flex justify-between items-center shrink-0">
+                <span class="font-bold text-gray-800 flex items-center gap-2"><i class="ph-fill ph-clock-counter-clockwise text-xl text-gemini-blue"></i> Chat History</span>
+                <button onclick="toggleSidebar()" class="text-gray-500 hover:text-red-500"><i class="ph-bold ph-x"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-3 space-y-2" id="history-list">
+                <p class="text-xs text-center text-gray-400 mt-10 font-medium" id="history-loader">Loading...</p>
+            </div>
+        </div>
+
+        <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 hidden lg:hidden transition-opacity"></div>
+
+        <div class="flex-1 flex flex-col min-w-0 h-full bg-transparent relative z-10" id="main-chat-container">
+            <div id="chat-box" class="flex-1 overflow-y-auto px-4 sm:px-8 md:px-16 pt-8 pb-4 w-full max-w-4xl mx-auto scroll-smooth">
+                <div id="welcome-screen" class="flex flex-col items-center justify-center h-full text-center space-y-4 animate-in fade-in duration-700 pb-20">
+                    <div class="relative mb-6 flex justify-center items-center">
+                        <div class="absolute inset-0 bg-blue-500 blur-[60px] opacity-15 scale-[2] rounded-[50px]"></div>
+                        <img src="https://i.ibb.co/YFgwgwkM/Blue-and-Black-Minimalist-Brand-Logo-20260403-135528-0000.png" alt="Vedika Logo" class="relative h-16 sm:h-24 md:h-28 w-auto object-contain drop-shadow-xl">
+                    </div>
+                    <p class="text-gray-500 text-lg font-medium mt-4 tracking-tight">Hello <span id="welcome-name" class="text-gray-900 font-bold"></span>! How can I assist you today?</p>
+                </div>
+            </div>
+
+            <div class="shrink-0 w-full bg-gradient-to-t from-[#fbfbfd] via-[#fbfbfd] to-transparent pt-8 pb-6 px-4 sm:px-8 md:px-16 z-20">
+                <div class="max-w-4xl mx-auto relative flex flex-col items-center">
+                    <div id="stop-container" class="absolute -top-14 hidden z-30 transition-all">
+                        <button onclick="stopGeneration()" class="apple-glass flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold text-gray-700 hover:text-red-500 transition-colors shadow-lg">
+                            <i class="ph-fill ph-stop-circle text-red-500 animate-pulse text-lg"></i> Stop
+                        </button>
+                    </div>
+
+                    <div class="gemini-input-container w-full shadow-[0_10px_40px_rgba(0,0,0,0.08)]">
+                        <div class="inner-input flex items-end px-2 py-2 sm:py-3 transition-colors">
+                            <textarea id="user-input" rows="1" 
+                                class="flex-1 bg-transparent px-4 py-2 focus:outline-none text-gray-900 text-[15px] resize-none font-medium placeholder-gray-400" 
+                                placeholder="Ask Vedika to code, write, or design..."
+                                oninput="this.style.height = ''; this.style.height = Math.min(this.scrollHeight, 150) + 'px'"></textarea>
+                            <button id="send-btn" onclick="sendMessage()" class="h-10 w-10 sm:h-11 sm:w-11 bg-[#1d1d1f] text-white rounded-full flex items-center justify-center hover:bg-black transition-transform active:scale-95 shrink-0 disabled:opacity-50 ml-2 shadow-md">
+                                <i class="ph-bold ph-arrow-up text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-[10px] sm:text-[11px] text-center text-gray-400 mt-3 font-medium">Vedika AI can make mistakes. Please verify important information. 🙏</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="canvas-panel" class="w-full lg:w-[45%] bg-[#fcfcfd] border-l border-gray-200 flex flex-col shrink-0 absolute lg:relative right-0 z-50 h-full transition-transform duration-300 translate-x-full lg:hidden shadow-2xl lg:shadow-none">
+            <div class="px-6 py-4 border-b border-gray-200/50 flex justify-between items-center bg-white shrink-0 shadow-sm z-10">
+                <h3 class="font-bold text-gray-800 flex items-center gap-2 text-lg">
+                    <i class="ph-fill ph-notebook text-gemini-blue text-xl"></i> Vedika Notebook
+                </h3>
+                <div class="flex gap-2">
+                    <button onclick="downloadWorkspace()" class="bg-white border border-gray-200 text-gray-700 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm hover:bg-gray-50 transition-colors flex items-center gap-1.5">
+                        <i class="ph-bold ph-download-simple text-sm"></i> Download
+                    </button>
+                    <button onclick="copyWorkspace(this)" class="bg-white border border-gray-200 text-gray-700 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm hover:bg-gray-50 transition-colors flex items-center gap-1.5">
+                        <i class="ph-bold ph-copy text-sm"></i> Copy
+                    </button>
+                    <button onclick="toggleWorkspace()" class="h-8 w-8 rounded-full bg-white border border-gray-200 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors shadow-sm">
+                        <i class="ph-bold ph-x text-sm"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 overflow-y-auto bg-white/50 p-6 sm:p-10">
+                <div id="canvas-content" class="markdown-body text-gray-900 min-h-full" contenteditable="true" spellcheck="false">
+                    <p id="canvas-empty-text" class="text-gray-400 italic text-center mt-20 font-medium">Please login to start workspace mode.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const WORKER_URL = "https://plain-band-2451.sanjaypatel26110.workers.dev/";
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyEZKuhlF6p_e1SfCeydwiEabp1QYscUGXooVkA-Va2P0kZd5y36lPVO_VEfBs0D4YS/exec";
+        
+        let currentUser = null;
+        let currentSessionId = Date.now().toString();
+        let isFirstMessageInSession = true;
+        
+        let currentVersion = "flash";
+        let chatHistory = [];
+        window.allChats = []; 
+        
+        let abortController = null;
+        let isUserScrolling = false;
+        let isWorkspaceEnabled = false;
+
+        const MAX_GUEST_QUERIES = 3;
+        let guestMsgCount = parseInt(localStorage.getItem('vedika_guest_count') || '0');
+        let guestChatsLocal = JSON.parse(localStorage.getItem('vedika_guest_chats') || '[]');
+
+        const chatBox = document.getElementById('chat-box');
+        chatBox.addEventListener('scroll', () => { isUserScrolling = (chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight) > 50; });
+        function scrollToBottom() { if (!isUserScrolling) chatBox.scrollTop = chatBox.scrollHeight; }
+
+        window.onload = () => {
+            const savedUser = localStorage.getItem('vedika_user');
+            if (savedUser) {
+                // LOGGED IN USER
+                currentUser = JSON.parse(savedUser);
+                document.getElementById('auth-overlay').style.display = 'none';
+                document.getElementById('welcome-name').innerText = currentUser.name;
+                document.getElementById('user-initial').innerHTML = currentUser.name.charAt(0).toUpperCase();
+                
+                // Hide Guest Banner, Show Verified Banner
+                document.getElementById('guest-counter').classList.add('hidden');
+                document.getElementById('verified-badge').classList.remove('hidden');
+                document.getElementById('verified-badge').classList.add('flex');
+                
+                // Update Workspace Empty Text
+                document.getElementById('canvas-empty-text').innerText = "Workspace is ready. Ask Vedika to write code or a document.";
+                
+                fetchHistory(); 
+            } else {
+                // GUEST USER
+                document.getElementById('welcome-name').innerText = "Guest";
+                document.getElementById('auth-overlay').style.display = 'none'; 
+                
+                // Show Guest Banner, Hide Verified Banner
+                document.getElementById('guest-counter').classList.remove('hidden');
+                document.getElementById('verified-badge').classList.add('hidden');
+                document.getElementById('verified-badge').classList.remove('flex');
+                
+                document.getElementById('guest-left').innerText = Math.max(0, MAX_GUEST_QUERIES - guestMsgCount);
+                document.getElementById('canvas-empty-text').innerText = "Please login to start workspace mode.";
+                
+                if(guestChatsLocal.length > 0) { document.getElementById('welcome-screen').style.display = 'none'; renderGuestChats(); }
+                if(guestMsgCount >= MAX_GUEST_QUERIES) { showAuthOverlay(true); }
+            }
+        };
+
+        function showAuthOverlay(forced = false) {
+            const overlay = document.getElementById('auth-overlay');
+            overlay.style.display = 'flex';
+            if(forced) document.getElementById('auth-close-btn').classList.add('hidden');
+            else document.getElementById('auth-close-btn').classList.remove('hidden');
+        }
+        function closeAuthOverlay() { document.getElementById('auth-overlay').style.display = 'none'; }
+        
+        function toggleAuthForm() {
+            document.getElementById('login-form').classList.toggle('hidden'); document.getElementById('register-form').classList.toggle('hidden');
+            document.getElementById('auth-title').innerText = document.getElementById('login-form').classList.contains('hidden') ? "Create Account" : "Login to Vedika";
+            document.getElementById('auth-msg').classList.add('hidden');
+        }
+
+        async function handleAuth(action) {
+            const msgBox = document.getElementById('auth-msg'); const btn = document.getElementById(action === 'login' ? 'btn-login' : 'btn-register');
+            const originalText = btn.innerText; btn.innerText = "Please wait..."; btn.disabled = true;
+            msgBox.classList.remove('hidden', 'text-red-500', 'text-green-500'); msgBox.classList.add('text-gray-600'); msgBox.innerText = "Connecting to system...";
+
+            let payload = { action: action };
+            if (action === 'login') { payload.emailOrPhone = document.getElementById('login-id').value; payload.password = document.getElementById('login-pass').value; } 
+            else { payload.name = document.getElementById('reg-name').value; payload.email = document.getElementById('reg-email').value; payload.phone = document.getElementById('reg-phone').value; payload.password = document.getElementById('reg-pass').value; }
+
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'text/plain' } });
+                const data = await res.json();
+                if (data.success) {
+                    msgBox.classList.add('text-green-500'); msgBox.innerText = data.message;
+                    if(action === 'login' || action === 'register') {
+                        currentUser = { user_id: data.user_id, name: data.name, email: data.email || payload.email, phone: data.phone || payload.phone, profile: data.profile || {} };
+                        localStorage.setItem('vedika_user', JSON.stringify(currentUser));
+                        localStorage.removeItem('vedika_guest_count'); localStorage.removeItem('vedika_guest_chats');
+                        setTimeout(() => { window.location.reload(); }, 1000);
+                    }
+                } else { msgBox.classList.add('text-red-500'); msgBox.innerText = data.message; }
+            } catch (e) { msgBox.classList.add('text-red-500'); msgBox.innerText = "Connection failed."; } 
+            finally { btn.innerText = originalText; btn.disabled = false; }
+        }
+
+        function logout() { localStorage.removeItem('vedika_user'); window.location.reload(); }
+
+        function openProfile() {
+            if(!currentUser) { showAuthOverlay(false); return; }
+            document.getElementById('prof-name').value = currentUser.name; document.getElementById('prof-phone').value = currentUser.phone; document.getElementById('prof-company').value = currentUser.profile.company || "";
+            document.getElementById('profile-overlay').classList.remove('hidden'); document.getElementById('profile-overlay').classList.add('flex');
+            setTimeout(() => document.getElementById('profile-modal').classList.remove('scale-95'), 10);
+            document.getElementById('otp-section').classList.add('hidden'); document.getElementById('btn-req-otp').classList.remove('hidden'); document.getElementById('prof-msg').classList.add('hidden');
+        }
+        function closeProfile() {
+            document.getElementById('profile-modal').classList.add('scale-95');
+            setTimeout(() => { document.getElementById('profile-overlay').classList.add('hidden'); document.getElementById('profile-overlay').classList.remove('flex'); }, 300);
+        }
+
+        async function requestProfileOTP() {
+            const btn = document.getElementById('btn-req-otp'); btn.innerText = "Sending..."; btn.disabled = true;
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "request_otp", email: currentUser.email }), headers: { 'Content-Type': 'text/plain' } });
+                const data = await res.json();
+                if(data.success) { document.getElementById('otp-section').classList.remove('hidden'); btn.classList.add('hidden'); } 
+                else { alert(data.message); }
+            } catch(e) { alert("Error"); }
+            btn.innerText = "Get OTP to Update"; btn.disabled = false;
+        }
+
+        async function verifyAndSaveProfile() {
+            const btn = document.getElementById('btn-verify-otp'); const msg = document.getElementById('prof-msg');
+            btn.innerText = "Verifying..."; btn.disabled = true;
+            const payload = { action: "update_profile", email: currentUser.email, otp: document.getElementById('prof-otp').value, new_name: document.getElementById('prof-name').value, new_phone: document.getElementById('prof-phone').value, extra_info: { company: document.getElementById('prof-company').value } };
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'text/plain' } });
+                const data = await res.json();
+                msg.classList.remove('hidden', 'text-red-500', 'text-green-500');
+                if(data.success) {
+                    msg.classList.add('text-green-500'); msg.innerText = "Update successful! PDF emailed.";
+                    currentUser.name = payload.new_name; currentUser.phone = payload.new_phone; currentUser.profile.company = payload.extra_info.company;
+                    localStorage.setItem('vedika_user', JSON.stringify(currentUser));
+                    document.getElementById('welcome-name').innerText = currentUser.name; document.getElementById('user-initial').innerText = currentUser.name.charAt(0).toUpperCase();
+                    setTimeout(closeProfile, 2000);
+                } else { msg.classList.add('text-red-500'); msg.innerText = data.message; }
+            } catch(e) { msg.innerText = "Error"; }
+            btn.innerText = "Verify & Save"; btn.disabled = false;
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('lg:-translate-x-full');
+            sidebar.classList.toggle('-translate-x-full');
+            if (sidebar.classList.contains('-translate-x-full')) overlay.classList.add('hidden');
+            else overlay.classList.remove('hidden');
+        }
+
+        function closeSidebarMobile() {
+            if (window.innerWidth < 1024) {
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+                document.getElementById('sidebar-overlay').classList.add('hidden');
+            }
+        }
+
+        function startNewChat() {
+            if(!currentUser && guestMsgCount >= MAX_GUEST_QUERIES) { showAuthOverlay(true); return; }
+            chatHistory = []; currentSessionId = Date.now().toString(); isFirstMessageInSession = true;
+            document.getElementById('chat-box').innerHTML = `
+                <div id="welcome-screen" class="flex flex-col items-center justify-center h-full text-center space-y-4 animate-in fade-in duration-700 pb-20">
+                    <div class="relative mb-6 flex justify-center items-center">
+                        <div class="absolute inset-0 bg-blue-500 blur-[60px] opacity-15 scale-[2] rounded-[50px]"></div>
+                        <img src="https://i.ibb.co/YFgwgwkM/Blue-and-Black-Minimalist-Brand-Logo-20260403-135528-0000.png" alt="Vedika Logo" class="relative h-16 sm:h-24 md:h-28 w-auto object-contain drop-shadow-xl">
+                    </div>
+                    <p class="text-gray-500 text-lg font-medium mt-4 tracking-tight">Hello ${currentUser ? currentUser.name : 'Guest'}! How can I assist you today?</p>
+                </div>`;
+            
+            if(isWorkspaceEnabled) toggleWorkspace();
+            closeSidebarMobile();
+        }
+
+        async function fetchHistory() {
+            if(!currentUser) {
+                document.getElementById('history-list').innerHTML = '<p class="text-xs text-center text-gray-500 mt-10 font-medium">Sign in to save and view history.</p>';
+                return;
+            }
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "get_history", user_id: currentUser.user_id }), headers: { 'Content-Type': 'text/plain' } });
+                const data = await res.json(); const list = document.getElementById('history-list'); list.innerHTML = '';
+                if(data.success) {
+                    window.allChats = data.chats || []; 
+                    if(data.sessions && data.sessions.length > 0) {
+                        data.sessions.forEach(sess => {
+                            const dateStr = new Date(sess.time).toLocaleDateString('en-IN');
+                            list.innerHTML += `
+                                <button onclick="loadChat('${sess.id}')" class="w-full text-left px-3 py-3 rounded-xl hover:bg-white/80 transition-all flex items-start gap-3 border border-transparent hover:border-gray-200/50 hover:shadow-sm">
+                                    <i class="ph-fill ph-chat-circle-dots text-gemini-blue mt-0.5 text-lg"></i>
+                                    <div class="overflow-hidden"><p class="text-[13px] font-bold text-gray-800 truncate">${sess.title}</p><p class="text-[10px] text-gray-400 font-bold mt-0.5">${dateStr}</p></div>
+                                </button>`;
+                        });
+                    } else { list.innerHTML = '<p class="text-xs text-center text-gray-400 mt-10 font-medium">No past conversations found.</p>'; }
+                }
+            } catch(e) { document.getElementById('history-list').innerHTML = '<p class="text-xs text-center text-red-400 mt-10 font-medium">Error loading history.</p>'; }
+        }
+
+        window.loadChat = function(sessionId) {
+            if(!currentUser) { showAuthOverlay(); return; }
+            currentSessionId = sessionId; isFirstMessageInSession = false; chatHistory = []; 
+            if(isWorkspaceEnabled) toggleWorkspace();
+            document.getElementById('chat-box').innerHTML = '';
+            
+            closeSidebarMobile();
+
+            const sessionChats = window.allChats.filter(c => c.session_id == sessionId);
+            sessionChats.forEach(chat => {
+                if(chat.role === 'user') {
+                    chatHistory.push({ role: "user", content: chat.message });
+                    document.getElementById('chat-box').innerHTML += `
+                    <div class="flex justify-end mb-6 w-full group">
+                        <div class="flex flex-col items-end max-w-[85%]"><div class="bg-gray-100 text-gray-900 px-5 py-3.5 rounded-[24px] rounded-tr-[8px] font-medium text-[15px] leading-relaxed shadow-sm border border-gray-200/50">${chat.message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div></div>
+                    </div>`;
+                } else {
+                    chatHistory.push({ role: "assistant", content: chat.message });
+                    const parsedHTML = DOMPurify.sanitize(marked.parse(chat.message), purifyConfig);
+                    document.getElementById('chat-box').innerHTML += `
+                    <div class="flex justify-start mb-8 w-full gap-3 sm:gap-4">
+                        <div class="flex-shrink-0 mt-1 hidden sm:block"><i class="ph-fill ph-sparkle text-2xl text-gemini-blue"></i></div>
+                        <div class="flex-1 max-w-[100%] sm:max-w-[85%] flex flex-col"><div class="markdown-body text-gray-900">${parsedHTML}</div></div>
+                    </div>`;
+                }
+            });
+            if (chatHistory.length > 10) chatHistory = chatHistory.slice(-10);
+            if (window.MathJax) MathJax.typesetPromise([document.getElementById('chat-box')]).catch(e => console.log(e));
+            scrollToBottom();
+        }
+
+        function renderGuestChats() {
+            document.getElementById('chat-box').innerHTML = '';
+            guestChatsLocal.forEach(chat => {
+                if(chat.role === 'user') {
+                    document.getElementById('chat-box').innerHTML += `
+                    <div class="flex justify-end mb-6 w-full group">
+                        <div class="flex flex-col items-end max-w-[85%]"><div class="bg-gray-100 text-gray-900 px-5 py-3.5 rounded-[24px] rounded-tr-[8px] font-medium text-[15px] leading-relaxed shadow-sm border border-gray-200/50">${chat.content.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div></div>
+                    </div>`;
+                } else {
+                    const parsedHTML = DOMPurify.sanitize(marked.parse(chat.content), purifyConfig);
+                    document.getElementById('chat-box').innerHTML += `
+                    <div class="flex justify-start mb-8 w-full gap-3 sm:gap-4">
+                        <div class="flex-shrink-0 mt-1 hidden sm:block"><i class="ph-fill ph-sparkle text-2xl text-gemini-blue"></i></div>
+                        <div class="flex-1 max-w-[100%] sm:max-w-[85%] flex flex-col"><div class="markdown-body text-gray-900">${parsedHTML}</div></div>
+                    </div>`;
+                }
+                chatHistory.push(chat);
+            });
+            if (window.MathJax) MathJax.typesetPromise([document.getElementById('chat-box')]).catch(e => console.log(e));
+            scrollToBottom();
+        }
+
+        async function saveChatToBackend(role, msg, titleText = "") {
+            if(!currentUser) {
+                guestChatsLocal.push({ role: role, content: msg }); localStorage.setItem('vedika_guest_chats', JSON.stringify(guestChatsLocal));
+                return;
+            }
+            if (!window.allChats) window.allChats = [];
+            window.allChats.push({ session_id: currentSessionId, time: new Date().toISOString(), role: role, message: msg });
+
+            const payload = { action: "save_chat", user_id: currentUser.user_id, session_id: currentSessionId, role: role, message: msg, is_new_session: isFirstMessageInSession, title: titleText };
+            fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'text/plain' } }).then(()=>{
+                if(isFirstMessageInSession) { isFirstMessageInSession = false; fetchHistory(); }
+            }).catch(e=>console.log(e));
+        }
+
+        // ==========================================
+        // === WORKSPACE & UI HELPERS ===
+        // ==========================================
+        function setModel(v) { currentVersion = v; document.getElementById('current-model-display').innerText = v === 'flash' ? 'Flash' : 'Pro'; }
+        
+        function toggleWorkspace() {
+            if(!currentUser) { showAuthOverlay(false); return; } // Restrict workspace toggle to logged in users
+            
+            isWorkspaceEnabled = !isWorkspaceEnabled; 
+            const btn = document.getElementById('canvas-toggle-btn'); const indicator = btn.querySelector('.indicator');
+            const panel = document.getElementById('canvas-panel');
+            
+            if (isWorkspaceEnabled) { 
+                btn.classList.add('border-gemini-blue', 'text-gemini-blue', 'bg-blue-50/50'); btn.classList.remove('border-gray-200', 'text-gray-600', 'bg-white/50'); indicator.classList.add('bg-gemini-blue'); indicator.classList.remove('bg-gray-400'); 
+                panel.classList.remove('translate-x-full', 'lg:hidden');
+            } else { 
+                btn.classList.remove('border-gemini-blue', 'text-gemini-blue', 'bg-blue-50/50'); btn.classList.add('border-gray-200', 'text-gray-600', 'bg-white/50'); indicator.classList.remove('bg-gemini-blue'); indicator.classList.add('bg-gray-400'); 
+                panel.classList.add('translate-x-full', 'lg:hidden');
+            }
+        }
+        
+        window.openSpecificCanvas = function(id) { 
+            const dataDiv = document.getElementById(`canvas-data-${id}`); 
+            if(dataDiv) { 
+                document.getElementById('canvas-content').innerHTML = decodeURIComponent(dataDiv.innerText); 
+                if(!isWorkspaceEnabled) toggleWorkspace();
+                if (window.MathJax) MathJax.typesetPromise([document.getElementById('canvas-content')]).catch((err) => console.log(err)); 
+            } 
+        }
+
+        window.downloadWorkspace = function() {
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-sm"></i> Saving...`;
+            setTimeout(() => {
+                const content = document.getElementById('canvas-content').innerText;
+                const blob = new Blob([content], { type: 'text/plain' });
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Vedika_Workspace_${new Date().getTime()}.txt`;
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                btn.innerHTML = `<i class="ph-bold ph-check text-green-500 text-sm"></i> Downloaded!`;
+                setTimeout(() => { btn.innerHTML = originalText; }, 2000);
+            }, 500);
+        }
+
+        async function copyToClipboard(text, buttonElement, originalText = "Copy") {
+            try {
+                const textArea = document.createElement("textarea"); textArea.value = text; document.body.appendChild(textArea); textArea.select(); document.execCommand("copy"); document.body.removeChild(textArea);
+                const span = buttonElement.querySelector('span'); const icon = buttonElement.querySelector('i');
+                if(icon && span) { icon.className = "ph-bold ph-check text-green-500 text-sm"; span.innerText = "Copied!"; } else { buttonElement.innerHTML = `<i class="ph-bold ph-check text-green-500 text-sm"></i> <span>Copied!</span>`; }
+                setTimeout(() => { if(icon && span) { icon.className = "ph-bold ph-copy text-sm"; span.innerText = originalText; } else { buttonElement.innerHTML = `<i class="ph-bold ph-copy text-sm"></i> <span>${originalText}</span>`; } }, 2000);
+            } catch (err) {}
+        }
+        window.copyCode = function(id, btn) { copyToClipboard(document.getElementById(id).innerText, btn, "Copy Code"); }
+        window.copyPrompt = function(btn, t) { copyToClipboard(t, btn, "Copy Prompt"); }
+        window.copyResponse = function(btn, t) { copyToClipboard(t, btn, "Copy Response"); }
+        window.copyCanvasContent = function(btn) { copyToClipboard(document.getElementById('canvas-content').innerText, btn, "Copy"); }
+
+        function stopGeneration() { if (abortController) { abortController.abort(); document.getElementById('stop-container').classList.add('hidden'); document.getElementById('send-btn').disabled = false; document.getElementById('user-input').disabled = false; } }
+        document.getElementById('user-input').addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+
+        async function sendMessage() {
+            const input = document.getElementById('user-input'); const msg = input.value.trim(); if(!msg) return;
+
+            if(!currentUser) {
+                if(guestMsgCount >= MAX_GUEST_QUERIES) { showAuthOverlay(true); return; }
+                guestMsgCount++; localStorage.setItem('vedika_guest_count', guestMsgCount.toString()); document.getElementById('guest-left').innerText = Math.max(0, MAX_GUEST_QUERIES - guestMsgCount);
+            }
+
+            const welcome = document.getElementById('welcome-screen'); if(welcome) welcome.style.display = 'none';
+
+            chatBox.innerHTML += `
+                <div class="flex justify-end mb-6 w-full group">
+                    <div class="flex flex-col items-end max-w-[85%]">
+                        <div class="bg-gray-100 text-gray-900 px-5 py-3.5 rounded-[24px] rounded-tr-[8px] font-medium text-[15px] leading-relaxed shadow-sm border border-gray-200/50">${msg.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+                        <button onclick='copyPrompt(this, ${JSON.stringify(msg)})' class="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 text-[10px] font-bold text-gray-400 hover:text-gemini-blue mt-2 mr-2 cursor-pointer"><i class="ph-bold ph-copy text-xs"></i> <span>Copy Prompt</span></button>
+                    </div>
+                </div>`;
+            
+            input.value = ''; input.style.height = 'auto'; input.disabled = true; document.getElementById('send-btn').disabled = true; document.getElementById('stop-container').classList.remove('hidden');
+
+            let chatTitle = msg.substring(0, 30) + "..."; saveChatToBackend("user", msg, chatTitle);
+
+            const aiId = "ai-" + Date.now();
+            chatBox.innerHTML += `
+                <div class="flex justify-start mb-8 w-full gap-3 sm:gap-4">
+                    <div class="flex-shrink-0 mt-1 hidden sm:block"><i class="ph-fill ph-sparkle text-2xl text-gemini-blue animate-pulse"></i></div>
+                    <div class="flex-1 max-w-[100%] sm:max-w-[85%] flex flex-col">
+                        <div id="reasoning-wrap-${aiId}" class="hidden mb-4 rounded-[16px] bg-white border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden">
+                            <button onclick="this.nextElementSibling.classList.toggle('open'); this.querySelector('.arrow').classList.toggle('rotate-180');" class="w-full px-5 py-3 text-left flex justify-between items-center hover:bg-gray-50 transition-colors">
+                                <span id="reasoning-title-${aiId}" class="flex items-center gap-2 text-xs font-bold text-gray-500"><i class="ph-bold ph-spinner animate-spin text-gemini-blue text-base"></i> <span class="tracking-wide">Thinking...</span></span>
+                                <i class="ph-bold ph-caret-down text-gray-400 arrow transition-transform duration-300 text-sm"></i>
+                            </button>
+                            <div id="reasoning-${aiId}" class="reasoning-box bg-[#fcfcfd] text-gray-500 text-[13px] px-5 py-4 border-t border-gray-100 whitespace-pre-wrap leading-relaxed font-mono"></div>
+                        </div>
+                        <div id="content-${aiId}" class="markdown-body text-gray-900"><i class="ph-bold ph-circle-notch animate-spin text-gray-400 text-xl"></i></div>
+                        <div id="tools-${aiId}" class="mt-2"></div>
+                    </div>
+                </div>`;
+
+            const rWrap = document.getElementById(`reasoning-wrap-${aiId}`); const rTitle = document.getElementById(`reasoning-title-${aiId}`);
+            const rBox = document.getElementById(`reasoning-${aiId}`); const cBox = document.getElementById(`content-${aiId}`); const tBox = document.getElementById(`tools-${aiId}`);
+            
+            isUserScrolling = false; scrollToBottom(); abortController = new AbortController();
+
+            try {
+                const response = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: msg, version: currentVersion, history: chatHistory, temperature: 0.6 }), signal: abortController.signal });
+                const reader = response.body.getReader(); const decoder = new TextDecoder("utf-8");
+                let fullStream = "", fullReasoning = "", hasReasoning = false, buffer = "";
+
+                while (true) {
+                    const { done, value } = await reader.read(); if (done) break;
+                    buffer += decoder.decode(value, { stream: true }); const lines = buffer.split('\n'); buffer = lines.pop(); 
+                    
+                    for (const line of lines) {
+                        if (line.startsWith('data: ') && !line.includes('[DONE]')) {
+                            try {
+                                const data = JSON.parse(line.substring(6)); const delta = data.choices[0]?.delta || {};
+                                if (delta.reasoning) { hasReasoning = true; fullReasoning += delta.reasoning; }
+                                if (delta.content) { fullStream += delta.content; }
+
+                                let cleanContent = fullStream; let extractedThinking = "";
+                                const completeRegex = /<think>([\s\S]*?)<\/think>/gi; let matchObj;
+                                while ((matchObj = completeRegex.exec(fullStream)) !== null) { extractedThinking += matchObj[1] + "\n"; hasReasoning = true; }
+                                cleanContent = cleanContent.replace(/<think>([\s\S]*?)<\/think>/gi, '');
+
+                                const incompleteRegex = /<think>([\s\S]*)$/i; const incompleteMatch = cleanContent.match(incompleteRegex);
+                                if (incompleteMatch) { extractedThinking += incompleteMatch[1] + "\n"; cleanContent = cleanContent.replace(/<think>([\s\S]*)$/i, ''); hasReasoning = true; }
+
+                                const partials = ["<think", "<thin", "<thi", "<th", "<t", "<"];
+                                for (let p of partials) { if (cleanContent.endsWith(p)) { cleanContent = cleanContent.substring(0, cleanContent.length - p.length); break; } }
+
+                                const finalDisplay = cleanContent.trim(); const combinedThinking = (fullReasoning + "\n" + extractedThinking).trim();
+
+                                if (hasReasoning && combinedThinking.length > 0) {
+                                    rWrap.classList.remove('hidden'); rBox.innerText = combinedThinking;
+                                    let thoughts = combinedThinking.split('\n').filter(t => t.trim().length > 0 && !t.includes('\`\`\`'));
+                                    if(thoughts.length > 0) {
+                                        let summaryWords = thoughts[thoughts.length - 1].trim().split(' ').slice(0, 5).join(' ').replace(/[^a-zA-Z0-9 ]/g, "");
+                                        if(summaryWords) rTitle.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-gemini-blue text-sm"></i> <span class="tracking-wide">Thinking: ${summaryWords}...</span>`;
+                                    }
+                                }
+
+                                if (finalDisplay.length > 0) {
+                                    const parsedHTML = DOMPurify.sanitize(marked.parse(finalDisplay), purifyConfig);
+                                    if (isWorkspaceEnabled) {
+                                        document.getElementById('canvas-content').innerHTML = parsedHTML;
+                                        const encodedData = encodeURIComponent(parsedHTML);
+                                        cBox.innerHTML = `
+                                            <p class="text-[15px] text-gray-800 mb-3 font-medium">Sure! I have prepared the document in the Workspace as requested. 🙏</p>
+                                            <div class="bg-[#f8fafd] border border-blue-100 rounded-2xl p-5 shadow-[0_4px_15px_rgba(0,102,204,0.05)] flex flex-col gap-4">
+                                                <div class="flex items-center gap-3 text-gemini-blue"><div class="p-2.5 bg-blue-50 border border-blue-100 rounded-xl"><i class="ph-fill ph-notebook text-2xl"></i></div><div><span class="font-bold text-sm block text-gray-900">Document is in Workspace</span><span class="text-xs text-gray-500 font-medium">Open to view, edit, and download</span></div></div>
+                                                <button onclick="openSpecificCanvas('${aiId}')" class="w-full bg-white border border-gray-200 text-gemini-blue py-2.5 rounded-xl text-sm font-bold shadow-sm hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"><i class="ph-bold ph-arrows-out-simple"></i> Open Workspace</button>
+                                                <div id="canvas-data-${aiId}" class="hidden-data">${encodedData}</div>
+                                            </div>`;
+                                    } else { cBox.innerHTML = parsedHTML; }
+                                    if(hasReasoning && rTitle.innerHTML.includes('Thinking')) rTitle.innerHTML = `<i class="ph-fill ph-check-circle text-green-500 text-sm"></i> <span class="tracking-wide">Thought process complete</span>`;
+                                } else if (hasReasoning && rTitle.innerHTML.includes('Thinking')) { cBox.innerHTML = ''; }
+                                scrollToBottom();
+                            } catch (e) {}
+                        }
+                    }
+                }
+
+                const finalCleanContent = fullStream.replace(/<think>[\s\S]*?(?:<\/think>|$)/gi, '').trim();
+                saveChatToBackend("assistant", finalCleanContent);
+
+                if (finalCleanContent.length > 0) {
+                    if (isWorkspaceEnabled) {
+                        const encodedData = encodeURIComponent(DOMPurify.sanitize(marked.parse(finalCleanContent), purifyConfig));
+                        cBox.innerHTML += `<div id="canvas-data-${aiId}" class="hidden-data">${encodedData}</div>`;
+                        tBox.innerHTML = ''; 
+                    } else {
+                        tBox.innerHTML = `<button onclick='copyResponse(this, ${JSON.stringify(finalCleanContent)})' class="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 hover:text-gemini-blue transition-colors mt-3 cursor-pointer w-fit"><i class="ph-bold ph-copy text-sm"></i> <span>Copy Response</span></button>`;
+                    }
+                }
+
+                chatHistory.push({ role: "user", content: msg }, { role: "assistant", content: finalCleanContent });
+                if (chatHistory.length > 10) chatHistory.splice(0, 2);
+
+            } catch (error) {
+                if (error.name !== 'AbortError') cBox.innerHTML = `<span class="text-red-500 font-bold"><i class="ph-bold ph-warning"></i> Connection Error.</span>`;
+            } finally {
+                document.getElementById('stop-container').classList.add('hidden'); input.disabled = false; document.getElementById('send-btn').disabled = false; input.focus();
+                if(rTitle && rTitle.innerHTML.includes('Thinking')) rTitle.innerHTML = `<i class="ph-fill ph-check-circle text-green-500 text-sm"></i> <span class="tracking-wide">Thought process complete</span>`;
+                if (window.MathJax) MathJax.typesetPromise([cBox, document.getElementById('canvas-content')]).catch((err) => console.log(err));
+                
+                if(!currentUser && guestMsgCount >= MAX_GUEST_QUERIES) { setTimeout(() => showAuthOverlay(true), 2000); }
+                scrollToBottom();
+            }
+        }
+    </script>
+</body>
+</html>
